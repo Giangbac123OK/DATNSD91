@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AppData.Migrations
 {
-    public partial class db : Migration
+    public partial class _ : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -301,14 +301,14 @@ namespace AppData.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Idnv = table.Column<int>(type: "int", nullable: false),
-                    Idkh = table.Column<int>(type: "int", nullable: false),
+                    Idnv = table.Column<int>(type: "int", nullable: true),
+                    Idkh = table.Column<int>(type: "int", nullable: true),
                     Trangthaithanhtoan = table.Column<int>(type: "int", nullable: false),
                     Donvitrangthai = table.Column<int>(type: "int", nullable: false),
                     Thoigiandathang = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Diachiship = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Diachiship = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     Tiencoc = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    Ngaygiaodukien = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Ngaygiaodukien = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Ngaygiaothucte = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Tongtiencantra = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Tongtiensanpham = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -330,14 +330,12 @@ namespace AppData.Migrations
                         name: "FK_hoadons_khachhangs_Idkh",
                         column: x => x.Idkh,
                         principalTable: "khachhangs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_hoadons_nhanviens_Idnv",
                         column: x => x.Idnv,
                         principalTable: "nhanviens",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppData.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250111131136_db")]
-    partial class db
+    [Migration("20250114145422_[]")]
+    partial class _
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -231,7 +231,6 @@ namespace AppData.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Diachiship")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -245,15 +244,12 @@ namespace AppData.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("Idkh")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<int?>("Idnv")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("Ngaygiaodukien")
-                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("Ngaygiaothucte")
@@ -985,15 +981,11 @@ namespace AppData.Migrations
 
                     b.HasOne("AppData.Models.Khachhang", "Khachhang")
                         .WithMany("Hoadons")
-                        .HasForeignKey("Idkh")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Idkh");
 
                     b.HasOne("AppData.Models.Nhanvien", "Nhanvien")
                         .WithMany("Hoadons")
-                        .HasForeignKey("Idnv")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Idnv");
 
                     b.Navigation("Giamgia");
 

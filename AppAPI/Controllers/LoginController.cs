@@ -38,6 +38,11 @@ namespace AppAPI.Controllers
                 {
                     return BadRequest("Số điện thoại đã tồn tại");
                 }
+				var rank = _context.ranks.FirstOrDefault(rank => rank.MinMoney == 0);
+				if (rank == null)
+				{
+                    return BadRequest("Không tìm thấy rank");
+                }
 
                 var khachHang = new Khachhang
 				{
@@ -51,8 +56,8 @@ namespace AppAPI.Controllers
 					Tichdiem = 0, // Giá trị mặc định
 					Diemsudung = 0,
 					Trangthai = 0,
-					Idrank = 1 // Rank mặc định
-				};
+					Idrank = rank.Id // Rank mặc định
+                };
 
                 await _KhachHang_Repos.AddAsync(khachHang);
 
