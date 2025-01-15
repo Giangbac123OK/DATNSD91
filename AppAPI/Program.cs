@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -49,8 +50,8 @@ builder.Services.AddCors(options =>
 IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
 PayOS payOS = new PayOS(configuration["Environment:PAYOS_CLIENT_ID"] ?? throw new Exception("Cannot find environment"),
-                    configuration["Environment:PAYOS_API_KEY"] ?? throw new Exception("Cannot find environment"),
-                    configuration["Environment:PAYOS_CHECKSUM_KEY"] ?? throw new Exception("Cannot find environment"));
+					configuration["Environment:PAYOS_API_KEY"] ?? throw new Exception("Cannot find environment"),
+					configuration["Environment:PAYOS_CHECKSUM_KEY"] ?? throw new Exception("Cannot find environment"));
 
 builder.Services.AddCors(options =>
 {
@@ -68,6 +69,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
 	options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+	options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 });
 
 builder.Services.AddScoped<IphuongthucthanhtoanRepos, PhuongthucthanhtoanRepos>();
@@ -158,6 +160,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+	app.UseDeveloperExceptionPage();
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
@@ -178,7 +181,7 @@ app.Use(async (context, next) =>
 	await next();
 });
 app.UseRouting();
-
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseHttpsRedirection();
 app.UseCors("AllowAll"); // S? d?ng chính sách CORS
@@ -188,3 +191,10 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+app.UseStaticFiles(new StaticFileOptions
+{
+	OnPrepareResponse = ctx =>
+	{
+		ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=604800");
+	}
+});

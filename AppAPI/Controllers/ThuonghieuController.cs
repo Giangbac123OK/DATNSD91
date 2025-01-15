@@ -61,6 +61,7 @@ namespace AppAPI.Controllers
 			return NoContent();
 		}
 
+
 		[HttpGet("Admin")]
 		public async Task<IActionResult> GetAllAdmin()
 		{

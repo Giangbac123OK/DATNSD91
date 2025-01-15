@@ -19,7 +19,7 @@ namespace AppData.Dto_Admin
 		public DateTime Ngaybatdau { get; set; }
 		[Required(ErrorMessage = "Vui lòng chọn ngày kết thúc")]
 		public DateTime Ngayketthuc { get; set; }
-		[Range(0, 2, ErrorMessage = "Phải lựa chọn trạng thái")]//0: phát hành, 1: chuẩn bị phát hành, 2: dừng phát hành
+		[Range(0, 4, ErrorMessage = "Phải lựa chọn trạng thái")]//0: phát hành, 1: chuẩn bị phát hành, 2: dừng phát hành
 		public int Trangthai { get; set; }
 		public List<string> RankNames { get; set; }
 	}

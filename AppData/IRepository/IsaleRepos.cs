@@ -20,5 +20,7 @@ namespace AppData.IRepository
 		Task SaveChangesAsync();
 		Task DeleteSaleChitietsBySaleIdAsync(int saleId);
 		Task<List<SaleDetailDTO>> GetSaleDetailsBySaleIdAsync(int saleId);
+		Task AddSaleAsync(Sale sale);
+	
 	}
 }

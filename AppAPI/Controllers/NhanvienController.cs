@@ -99,6 +99,7 @@ namespace AppAPI.Controllers
 			}
 		}
 
+
 		[HttpGet("Admin")]
 		public async Task<IActionResult> GetAllAdmin()
 		{
@@ -249,6 +250,27 @@ namespace AppAPI.Controllers
 			try
 			{
 				var nhanvien = await _service.LoginAsync(loginDto.Email, loginDto.Password);
+
+				if (nhanvien == null)
+				{
+					return BadRequest(new { success = false, message = "Số điện thoại hoặc mật khẩu không đúng, hoặc tài khoản không có quyền truy cập." });
+				}
+
+				return Ok(new { success = true, message = "Đăng nhập thành công!", data = nhanvien });
+			}
+			catch (Exception ex)
+			{
+				// Log lỗi để kiểm tra sau
+				Console.WriteLine("Lỗi xảy ra trong Login: " + ex.Message);
+				return StatusCode(500, new { success = false, message = "Có lỗi xảy ra trên server." });
+			}
+		}
+		[HttpPost("login/Employee")]
+		public async Task<IActionResult> LoginEmployee([FromBody] LoginDto loginDto)
+		{
+			try
+			{
+				var nhanvien = await _service.LoginAsyncEmployee(loginDto.Email, loginDto.Password);
 
 				if (nhanvien == null)
 				{

@@ -12,8 +12,10 @@ namespace AppAPI.Controllers
 		private readonly MyDbContext _context;
 
 		private readonly IGiamgiaService _service;
-		public GiamgiaController(KhachHang_IGiamgiaService service, IGiamgiaService service1, MyDbContext context)
-        {
+		private readonly ILogger<GiamgiaController> _logger;
+		public GiamgiaController(KhachHang_IGiamgiaService service, IGiamgiaService service1, MyDbContext context, ILogger<GiamgiaController> logger)
+		{
+			_logger = logger;
 			_KhachHang_Service = service;
 			_service = service1;
 			_context = context;
@@ -140,9 +142,16 @@ namespace AppAPI.Controllers
 			}
 			catch (Exception ex)
 			{
-				// Log exception ở đây nếu cần
-				return StatusCode(500, new { message = "Đã xảy ra lỗi khi cập nhật giảm giá.", detail = ex.Message });
+				// Log hoặc ghi lại lỗi chi tiết để kiểm tra
+				_logger.LogError(ex, "Lỗi xảy ra khi cập nhật giảm giá với ID: {id}", id);
+
+				return StatusCode(500, new
+				{
+					message = "Đã xảy ra lỗi khi cập nhật giảm giá.",
+					detail = ex.InnerException?.Message ?? ex.Message // Hiển thị lỗi chi tiết hơn
+				});
 			}
+
 		}
 
 		[HttpDelete("{id}/Admin")]

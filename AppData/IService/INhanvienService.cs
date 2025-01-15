@@ -29,5 +29,6 @@ namespace AppData.IService
         IEnumerable<Nhanvien> SearchNhanvienByEmail(string email);
 		Task<bool> CheckForeignKeyConstraintAsync(int nhanvienId);
 		Task UpdateStatusAsync(int id);
+        Task<Nhanvien> LoginAsyncEmployee(string email, string password);
 	}
 }

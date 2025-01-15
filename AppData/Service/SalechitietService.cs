@@ -27,7 +27,6 @@ namespace AppData.Service
 
 			return new SalechitietDTO
 			{
-				Id = salechitiet.Id,
 				Idspct = salechitiet.Idspct,
 				Idsale = salechitiet.Idsale,
 				Donvi = salechitiet.Donvi,
@@ -50,7 +49,7 @@ namespace AppData.Service
 			}).ToList();
 		}
 
-		public async Task CreateAsync(SalechitietDTO salechitietDTO)
+		public async Task CreateAsync(SaleDetailsDto salechitietDTO)
 		{
 			var salechitiet = new Salechitiet
 			{
@@ -63,6 +62,7 @@ namespace AppData.Service
 
 			await _repository.CreateAsync(salechitiet);
 		}
+
 
 		public async Task UpdateAsync(SalechitietDTO salechitietDTO)
 		{

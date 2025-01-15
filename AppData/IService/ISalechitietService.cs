@@ -11,7 +11,7 @@ namespace AppData.IService
 	{
 		Task<SalechitietDTO> GetByIdAsync(int id);
 		Task<List<SalechitietDTO>> GetAllAsync();
-		Task CreateAsync(SalechitietDTO salechitietDTO);
+		Task CreateAsync(SaleDetailsDto salechitietDTO);
 		Task UpdateAsync(SalechitietDTO salechitietDTO);
 		Task DeleteAsync(int id);
 

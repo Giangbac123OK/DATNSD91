@@ -76,18 +76,31 @@ namespace AppData.Service
 
 			sanpham.Tensp = sanphamDto.Tensp;
 			sanpham.Mota = sanphamDto.Mota;
-			sanpham.Soluong = sanphamDto.Soluong;
+			sanpham.Soluong = sanpham.Soluong;
+			
+		
 			sanpham.Giaban = sanphamDto.Giaban;
 
 			sanpham.UrlHinhanh = sanphamDto.UrlHinhanh;
 			sanpham.Idth = sanphamDto.Idth;
-			sanpham.Trangthai = sanphamDto.Trangthai;
 			sanpham.NgayThemMoi = sanpham.NgayThemMoi;
 			await _repository.UpdateAsync(sanpham);
 			return true;
 		}
 
-		public async Task DeleteAsync(int id) => await _repository.DeleteAsync(id);
+		public async Task DeleteAsync(int id) {
+			var x =await _repository.CheckForeignKeyConstraintAsync(id);
+			if (x == false)
+			{
+				var exitProduct = await _repository.GetByIdAsync(id);
+				exitProduct.Trangthai = 3;//xóa mềm
+			 await	_repository.UpdateAsync(exitProduct);
+			}
+			else
+			{
+				await _repository.DeleteAsync(id);
+			}
+		} 
 
 		public async Task<IEnumerable<SanphamDTO>> SearchByNameAsync(string name)
 		{
@@ -128,15 +141,22 @@ namespace AppData.Service
 			}
 			if (sale.Trangthai != 3)
 			{
-				// Cập nhật trạng thái dựa trên ngày bắt đầu và ngày kết thúc
-				if (sale.Soluong >0 )
+				if(sale.Trangthai == 2)
 				{
-					sale.Trangthai = 0; // Đang diễn ra
+					if (sale.Soluong > 0)
+					{
+						sale.Trangthai = 0; // Đang diễn ra
+					}
+					else if (sale.Soluong == 0)
+					{
+						sale.Trangthai = 1; // Chuẩn bị diễn ra
+					}
 				}
-				else if (sale.Soluong==0)
+				if(sale.Trangthai == 0 || sale.Trangthai == 1)
 				{
-					sale.Trangthai = 1; // Chuẩn bị diễn ra
+					sale.Trangthai = 2;
 				}
+				
 			}
 
 

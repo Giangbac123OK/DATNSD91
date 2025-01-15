@@ -62,7 +62,7 @@ namespace AppData.Repository
 
 			return x;
 		}
-		public async Task<IEnumerable<Sanpham>> GetAllAsync() => await _context.sanphams.ToListAsync();
+		public async Task<IEnumerable<Sanpham>> GetAllAsync() => await _context.sanphams.Where(x=>x.Trangthai==0|| x.Trangthai == 1|| x.Trangthai == 2).ToListAsync();
 
 		public async Task<Sanpham> GetByIdAsync(int id) => await _context.sanphams.FindAsync(id);
 
@@ -121,6 +121,7 @@ namespace AppData.Repository
 
 		public async Task DeleteAsync(int id)
 		{
+
 			var sanpham = await GetByIdAsync(id);
 			if (sanpham != null)
 			{

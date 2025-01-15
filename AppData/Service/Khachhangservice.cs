@@ -60,6 +60,7 @@ namespace AppData.Service
 		public async Task<IEnumerable<Khachhang>> GetAllAsyncThao()
 		{
 			var khachhangs = await _repository.GetAllAsyncThao();
+		
 			return khachhangs.Select(kh => new Khachhang
 			{
 				Id = kh.Id,
@@ -73,6 +74,7 @@ namespace AppData.Service
 				Ngaytaotaikhoan = kh.Ngaytaotaikhoan,
 				Diemsudung = kh.Diemsudung,
 				Trangthai = kh.Trangthai,
+				
 				Idrank = kh.Idrank
 			});
 		}

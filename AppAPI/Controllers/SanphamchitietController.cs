@@ -210,7 +210,7 @@ namespace AppAPI.Controllers
 
 			return NotFound(new { message = "Sản phẩm chi tiết không tồn tại." });
 		}
-		[HttpPut("{idspct}/Admin")]
+		[HttpPut("{idspct}/Admin/Thao")]
 		public async Task<IActionResult> UpdateSanphamchitiet(int idspct, [FromBody] UpdateSanphamchitietDTO dto)
 		{
 			try
@@ -220,6 +220,7 @@ namespace AppAPI.Controllers
 			}
 			catch (Exception ex)
 			{
+				// Log exception nếu cần thiết
 				// Log exception nếu cần thiết
 				return StatusCode(500, new { message = ex.Message });
 			}

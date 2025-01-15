@@ -10,7 +10,7 @@ namespace AppData.IService
 {
 	public interface ISaleService
 	{
-		//Task<IEnumerable<SaleDto>> GetAllAsync();
+		Task<bool> UpdateSaleWithDetailsAsync(int saleId, CreateSaleDto updateSaleDto);
 		Task<IEnumerable<Sale>> GetAllWithIdAsync();
 		Task<SaleDto> GetByIdAsync(int id);
 		Task<SaleDto> AddAsync(SaleDto saleDto);
@@ -19,7 +19,7 @@ namespace AppData.IService
 		Task UpdateStatusLoad(int id);
 		Task UpdateAsync(int id, SaleDto saleDto);
 		Task<bool> DeleteSaleAsync(int id);
-
+		Task<bool> AddSaleWithDetailsAsync(CreateSaleDto createSaleDto);
 		Task<bool> UpdateSanphamchitietPricesAsync(int saleId);
 		Task<List<SaleDetailDTO>> GetSaleDetailsAsync(int saleId);
 	}

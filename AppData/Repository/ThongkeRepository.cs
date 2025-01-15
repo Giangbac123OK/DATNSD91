@@ -47,7 +47,7 @@ namespace AppData.Repository
 											join sp in _context.sanphams on spct.Idsp equals sp.Id
 											join hd in _context.hoadons on hdct.Idhd equals hd.Id
 											where hd.Trangthai == 3  
-											&& hd.Ngaygiaothucte >= startDate && hd.Ngaygiaothucte <= endDate  // Lọc theo khoảng thời gian
+											&&( ( hd.Donvitrangthai == 0 && hd.Ngaygiaothucte >= startDate && hd.Ngaygiaothucte <= endDate )|| (hd.Donvitrangthai == 1 && hd.Thoigiandathang >= startDate && hd.Thoigiandathang <= endDate) ) // Lọc theo khoảng thời gian
 											group hdct by new { sp.Id, sp.Tensp } into grouped
 											select new TopSellingProductDto
 											{

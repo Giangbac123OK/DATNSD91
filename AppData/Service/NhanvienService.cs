@@ -138,6 +138,20 @@ namespace AppData.Service
 
 			return nhanvien; // Trả về đối tượng nhân viên nếu hợp lệ
 		}
+		public async Task<Nhanvien> LoginAsyncEmployee(string email, string password)
+		{
+
+			var nhanvien = await _repository.GetBySdtAndPasswordAsync(email, password);
+
+			// Kiểm tra nếu nhân viên không tồn tại hoặc không có quyền đăng nhập
+			if (nhanvien == null || nhanvien.Trangthai != 0 || nhanvien.Role != 1)
+			{
+				return null; // Trả về null nếu không hợp lệ
+			}
+
+			return nhanvien; // Trả về đối tượng nhân viên nếu hợp lệ
+		}
+
 
 		public async Task<NhanvienDTO> FindByEmailAsync(string email)
 		{
