@@ -90,6 +90,7 @@ namespace AppAPI.Controllers
 			return Ok(result);
 		}
 
+
 		[HttpPost("Admin")]
 		public async Task<IActionResult> AddRank([FromBody] AppData.Dto_Admin.RankDto rankDto)
 		{

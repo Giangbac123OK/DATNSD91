@@ -16,26 +16,126 @@ namespace AppData.Service
 
 		private readonly ISanphamchitietRepository _sanphamchitietRepository;
 		private readonly IsalechitietRepos _salechitietRepository;
+		private readonly IsanphamRepos _sanphamRepository;
+		
 
-		public SaleService(IsaleRepos repository, ISanphamchitietRepository sanphamchitietRepository, IsalechitietRepos salechitietRepository)
+		public SaleService(IsaleRepos repository, ISanphamchitietRepository sanphamchitietRepository, IsalechitietRepos salechitietRepository, IsanphamRepos sanphamRepository)
         {
 			_repository = repository;
-
+			_sanphamRepository=sanphamRepository;
 			_sanphamchitietRepository = sanphamchitietRepository;
 			_salechitietRepository = salechitietRepository;
 		}
-		/*public async Task<IEnumerable<SaleDto>> GetAllAsync()
+		public async Task<bool> UpdateSaleWithDetailsAsync(int saleId, CreateSaleDto updateSaleDto)
 		{
-			var sales = await _repository.GetAllAsync();
-			return sales.Select(s => new SaleDto
+			// Lấy thông tin Sale từ cơ sở dữ liệu
+			var sale = await _repository.GetByIdAsync(saleId);
+			if (sale == null)
 			{
-				Ten = s.Ten,
-				Mota = s.Mota,
-				Trangthai = s.Trangthai,
-				Ngaybatdau = s.Ngaybatdau,
-				Ngayketthuc = s.Ngayketthuc
-			});
-		}*/
+				return false; // Sale không tồn tại
+			}
+
+			if (updateSaleDto.Ngaybatdau > DateTime.Now)
+			{
+				sale.Trangthai = 2;
+			}
+			else if (updateSaleDto.Ngaybatdau <= DateTime.Now && updateSaleDto.Ngaybatdau >= DateTime.Now)
+			{
+				sale.Trangthai = 0;
+			}
+			else
+			{
+				sale.Trangthai = 1;
+			}
+			sale.Ten = updateSaleDto.Ten;
+			sale.Mota = updateSaleDto.Mota;
+			sale.Ngaybatdau = updateSaleDto.Ngaybatdau;
+			sale.Ngayketthuc = updateSaleDto.Ngayketthuc;
+
+			// Danh sách Salechitiet hiện có
+			var currentDetails = sale.Salechitiets.ToList();
+
+			// Duyệt qua các chi tiết mới từ DTO
+			foreach (var newDetail in updateSaleDto.SaleDetails)
+			{
+				var existingDetail = currentDetails
+					.FirstOrDefault(d => d.Idspct == newDetail.Idspct);
+
+				if (existingDetail != null)
+				{
+					// Cập nhật chi tiết đã tồn tại
+					existingDetail.Donvi = newDetail.Donvi;
+					existingDetail.Soluong = newDetail.Soluong;
+					existingDetail.Giatrigiam = newDetail.Giatrigiam;
+				}
+				else
+				{
+					// Thêm chi tiết mới
+					var saleDetail = new Salechitiet
+					{
+						Idsale = saleId,
+						Idspct = newDetail.Idspct,
+						Donvi = newDetail.Donvi,
+						Soluong = newDetail.Soluong,
+						Giatrigiam = newDetail.Giatrigiam
+					};
+					sale.Salechitiets.Add(saleDetail);
+				}
+			}
+
+			// Xóa các chi tiết không còn trong danh sách mới
+			var newDetailIds = updateSaleDto.SaleDetails.Select(d => d.Idspct).ToList();
+			var detailsToRemove = currentDetails
+				.Where(d => !newDetailIds.Contains(d.Idspct))
+				.ToList();
+
+			foreach (var detail in detailsToRemove)
+			{
+				sale.Salechitiets.Remove(detail);
+			}
+
+			// Lưu thay đổi vào cơ sở dữ liệu
+			await _repository.SaveChangesAsync();
+
+			return true;
+		}
+		public async Task<bool> AddSaleWithDetailsAsync(CreateSaleDto createSaleDto)
+		{
+			DateTime cs = DateTime.Now;
+			if(createSaleDto.Ngaybatdau> cs)
+			{
+				createSaleDto.Trangthai = 2;
+			}
+			else if (createSaleDto.Ngaybatdau <= cs && createSaleDto.Ngayketthuc>= cs)
+			{
+				createSaleDto.Trangthai = 0;
+			}
+			else
+			{
+				createSaleDto.Trangthai = 1;
+			}
+			var sale = new Sale
+			{
+				
+				Ten = createSaleDto.Ten,
+				Mota = createSaleDto.Mota,
+				
+				Trangthai = createSaleDto.Trangthai,
+				Ngaybatdau = createSaleDto.Ngaybatdau,
+				Ngayketthuc = createSaleDto.Ngayketthuc,
+				Salechitiets = createSaleDto.SaleDetails.Select(d => new Salechitiet
+				{
+					Idspct = d.Idspct,
+					Donvi = d.Donvi,
+					Soluong = d.Soluong,
+					Giatrigiam = d.Giatrigiam
+				}).ToList()
+			};
+
+			await _repository.AddSaleAsync(sale);
+			await _repository.SaveChangesAsync();
+			return true;
+		}
 		public async Task<IEnumerable<Sale>> GetAllWithIdAsync()
 		{
 			return await _repository.GetAllAsync();
@@ -148,7 +248,11 @@ namespace AppData.Service
 			}
 			if (sale.Ngaybatdau <= DateTime.Now&& sale.Ngayketthuc >= DateTime.Now)
 			{
-				sale.Trangthai = 0; // Đang diễn ra
+				UpdateSanphamchitietPricesAsync(id);
+				sale.Trangthai = 0;
+				
+
+
 			}
 			else if (sale.Ngaybatdau > DateTime.Now)
 			{

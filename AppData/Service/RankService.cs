@@ -103,14 +103,23 @@ namespace AppData.Service
 			var exists = await _rankRepository.CheckForeignKeyConstraintAsync(Id);
 			if (exists)
 			{
-				return false; // Có Hóa đơn liên quan, không thể xóa
+				// Nếu có khóa ngoại, chuyển trạng thái sang 2
+				var rank = await _rankRepository.GetRankByIdAsync(Id);
+				if (rank != null)
+				{
+					rank.Trangthai = 2; // Giả sử cột trạng thái là `Status`
+					await _rankRepository.UpdateRankAsync(rank);
+				}
+				return true;
 			}
 
-			var rank = await _rankRepository.GetRankByIdAsync(Id);
-			if (rank == null) return false;
+			// Nếu không có khóa ngoại, tiếp tục kiểm tra và xóa
+			var rankToDelete = await _rankRepository.GetRankByIdAsync(Id);
+			if (rankToDelete == null) return false;
 
 			await _rankRepository.DeleteRankAsync(Id);
 			return true;
 		}
+
 	}
 }

@@ -331,6 +331,25 @@ namespace AppAPI.Controllers
                 return StatusCode(500, new { message = "Lỗi khi xóa hoá đơn", error = ex.Message });
             }
         }
+		[HttpGet("oln/Admin")]
+		public async Task<ActionResult<IEnumerable<Hoadon>>> GetAllHoadonsOln()
+		{
+			try
+			{
+				var hoadons = await _hoadonService.GetAllHoadonsOlnAsync();
+				if (hoadons == null || !hoadons.Any())
+				{
+					return NotFound("Không tìm thấy hóa đơn nào.");
+				}
+				return Ok(hoadons);
+			}
+			catch (Exception ex)
+			{
+				// Ghi log lỗi hoặc trả về mã lỗi thích hợp
+				return StatusCode(500, "Lỗi server: " + ex.Message);
+			}
+		}
+		
 		[HttpPost("create")]
 		public async Task<IActionResult> CreateHoaDon([FromBody] CreateHoadonDTO dto)
 		{
@@ -341,7 +360,7 @@ namespace AppAPI.Controllers
 			}
 			catch (Exception ex)
 			{
-				
+
 				return BadRequest(new { message = ex.Message, innerException = ex.InnerException?.Message });
 			}
 		}
@@ -360,16 +379,152 @@ namespace AppAPI.Controllers
 				return BadRequest(new { message = ex.Message, innerException = ex.InnerException?.Message });
 			}
 		}
-		[HttpGet("all/Admin")]
-		public async Task<ActionResult<IEnumerable<Hoadon>>> GetAllHoadons()
+		[HttpGet("getall/Admin")]
+		public List<Hoadon> GetAllHoadons()
 		{
+			var hoadons = _hoadonService.GetAllHoadons();
+
+
+			return hoadons;
+
+		}
+		[HttpPut("ChuyenTrangThai/Admin")]
+		public async Task<IActionResult> ChuyenTrangThai(int id, int huy)
+		{
+			try
+			{
+				var result = await _hoadonService.ChuyenTrangThaiAsync(id, huy);
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
+		}
+		[HttpPut("RestoreState/Admin")]
+		public async Task<IActionResult> RestoreState(int id, int trangthai)
+		{
+			try
+			{
+				var result = await _hoadonService.RestoreStateAsync(id, trangthai);
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
+		}
+		[HttpGet("Admin")]
+		public async Task<IActionResult> GetByIdAdmin(int id)
+		{
+			try
+			{
+				var result = await _hoadonService.GetByIdAsync(id);
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				return NotFound(new { message = ex.Message });
+			}
+		}
+		[HttpGet("all/Admin")]
+		public async Task<ActionResult<IEnumerable<Hoadon>>> GetAllHoadonsThongke()
+		{
+			try
+			{
 				var hoadons = await _hoadonService.GetAllHoadonsAsync();
 				if (hoadons == null || !hoadons.Any())
 				{
 					return NotFound("Không tìm thấy hóa đơn nào.");
 				}
 				return Ok(hoadons);
-			
+			}
+			catch (Exception ex)
+			{
+				// Ghi log lỗi hoặc trả về mã lỗi thích hợp
+				return StatusCode(500, "Lỗi server: " + ex.Message);
+			}
+		}
+		[HttpGet("Admin/Off")]
+		public async Task<ActionResult<IEnumerable<Hoadon>>> GetAllOffHoadons()
+		{
+			try
+			{
+				var hoadons = await _hoadonService.GetAllOffHoadonsAsync();
+				if (hoadons == null || !hoadons.Any())
+				{
+					return NotFound("Không tìm thấy hóa đơn nào.");
+				}
+				return Ok(hoadons);
+			}
+			catch (Exception ex)
+			{
+				// Ghi log lỗi hoặc trả về mã lỗi thích hợp
+				return StatusCode(500, "Lỗi server: " + ex.Message);
+			}
+		}
+		[HttpGet("daily-report/Admin")]
+		public async Task<IActionResult> GetDailyReport([FromQuery] DateTime? date = null)
+		{
+			date ??= DateTime.Now; // Nếu không có ngày truyền vào, mặc định là ngày hôm nay
+			var report = await _hoadonService.GetDailyReportAsync(date.Value);
+
+			return Ok(new
+			{
+				Date = date.Value.ToString("yyyy-MM-dd"),
+				TongTienThanhToan = report.TongTienThanhToan,
+				TongSoLuongDonHang = report.TongSoLuongDonHang
+			});
+		}
+		[HttpGet("order-summary/Admin")]
+		public IActionResult GetOrderSummary([FromQuery] string timeUnit)
+		{
+			try
+			{
+				var summary = _hoadonService.GetOrderSummary(timeUnit);
+				return Ok(summary);
+			}
+			catch (ArgumentException ex)
+			{
+				return BadRequest(new { Message = ex.Message });
+			}
+		}
+		[HttpGet("{idHoaDon}/Admin/hoadondetaisl")]
+		public IActionResult GetHoaDonDetails(int idHoaDon)
+		{
+			var result = _hoadonService.GetHoaDonDetails(idHoaDon);
+			if (result == null)
+			{
+				return NotFound(new { Message = "Không tìm thấy hóa đơn." });
+			}
+
+			return Ok(result);
+		}
+		[HttpDelete("{id}/Admin/hdtq")]
+		public async Task<IActionResult> XoaHoadon(int id)
+		{
+			var result = await _hoadonService.XoaHoadonAsync(id);
+			if (result)
+			{
+				return Ok(new { Message = "Xóa hóa đơn thành công." });
+			}
+			else
+			{
+				return NotFound(new { Message = "Không tìm thấy hóa đơn." });
+			}
+		}
+		[HttpGet("oln-orders/Admin")]
+		public async Task<IActionResult> GetOlnOrdersByWeek()
+		{
+			var result = await _hoadonService.GetOlnOrdersByWeekAsync();
+			return Ok(result);
+		}
+
+		[HttpGet("off-orders/Admin")]
+		public async Task<IActionResult> GetOffOrdersByWeek()
+		{
+			var result = await _hoadonService.GetOffOrdersByWeekAsync();
+			return Ok(result);
 		}
 
 	}

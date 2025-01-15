@@ -24,8 +24,10 @@ namespace AppData.Repository
 
 		public async Task<Giamgia> GetByIdAsync(int id)
 		{
-			return await _context.giamgias.FindAsync(id);
+			var giamgia = await _context.giamgias.FirstOrDefaultAsync(g => g.Id == id);
+			return giamgia;
 		}
+
 		public async Task<IEnumerable<Giamgia>> GetVouchersByCustomerIdAsync(int customerId)
 		{
 			var customer = await _context.khachhangs
@@ -106,8 +108,7 @@ namespace AppData.Repository
 
 				_context.giamgia_Ranks.RemoveRange(ranksToDelete);
 			}
-
-			// Finally, delete the Giamgia entity
+			
 			var giamgiaToDelete = await _context.giamgias.FindAsync(giamgiaId);
 			if (giamgiaToDelete != null)
 			{
@@ -199,8 +200,16 @@ namespace AppData.Repository
 
 		public async Task UpdateAsync(Giamgia giamgia)
 		{
-			_context.giamgias.Update(giamgia);
+			var entry = _context.Entry(giamgia);
+			if (entry.State == EntityState.Detached)
+			{
+				_context.giamgias.Attach(giamgia);
+			}
+			entry.State = EntityState.Modified;
+
 			await _context.SaveChangesAsync();
+
 		}
+		
 	}
 }

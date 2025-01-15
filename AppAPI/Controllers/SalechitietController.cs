@@ -1,4 +1,5 @@
 ﻿
+using AppData.Dto_Admin;
 using AppData.IService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -117,6 +118,7 @@ namespace AppAPI.Controllers
             }
         }
 
+
 		[HttpGet("Admin")]
 		public async Task<ActionResult<IEnumerable<AppData.Dto_Admin.SalechitietDTO>>> GetSalechitiets()
 		{
@@ -137,7 +139,7 @@ namespace AppAPI.Controllers
 		}
 
 		[HttpPost("Admin")]
-		public async Task<ActionResult> CreateSalechitiet([FromBody] List<AppData.Dto_Admin.SalechitietDTO> salechitietDTOs)
+		public async Task<ActionResult> CreateSalechitiet([FromBody] List<SaleDetailsDto> salechitietDTOs)
 		{
 			if (salechitietDTOs == null || !salechitietDTOs.Any())
 			{
@@ -151,6 +153,7 @@ namespace AppAPI.Controllers
 
 			return Ok("Thêm chi tiết sale thành công.");
 		}
+
 
 
 		// PUT: api/Salechitiet/5

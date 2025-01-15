@@ -8,6 +8,7 @@ using AppData.IRepository;
 using AppData.IService;
 using AppData.Models;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AppData.Service
@@ -18,12 +19,14 @@ namespace AppData.Service
 		private readonly IGiamgiaRepos _repository;
 		private readonly IMapper _mapper;
 		private readonly IRankRepository _rankRepository;
-        public GiamgiaService(IGiamgiaRepos repository, IMapper mapper, IRankRepository rankRepository)
+		private readonly MyDbContext _context;
+        public GiamgiaService(IGiamgiaRepos repository, IMapper mapper, IRankRepository rankRepository,MyDbContext context)
 		{
 			
 			_repository = repository;
 			_mapper = mapper;
 			_rankRepository = rankRepository;
+			_context = context;
 
 		}
 
@@ -72,7 +75,6 @@ namespace AppData.Service
 			{
 				var currentDate = DateTime.Now;
 
-				// Kiểm tra ngày bắt đầu và ngày kết thúc để cập nhật trạng thái
 				if (giamgia.Ngaybatdau > currentDate)
 				{
 					giamgia.Trangthai = 1;  // Chuyển trạng thái "chuẩn bị phát hành"
@@ -88,6 +90,7 @@ namespace AppData.Service
 			}
 
 			await _repository.UpdateAsync(giamgia);
+			await _context.SaveChangesAsync();
 			
 		
 		}
@@ -103,8 +106,7 @@ namespace AppData.Service
 
 		public async Task UpdateTrangthaiContinuouslyAsync()
 		{
-			while (true)
-			{
+			
 				var currentDate = DateTime.Now;
 
 				// Lấy danh sách tất cả các bản ghi Giamgia
@@ -117,11 +119,11 @@ namespace AppData.Service
 					{
 						giamgia.Trangthai = 0; 
 					}
-					else if (giamgia.Ngaybatdau < currentDate && giamgia.Ngayketthuc < currentDate)
+					else if (giamgia.Ngayketthuc < currentDate )
 					{
 						giamgia.Trangthai = 3; // Đã phát hành
 					}
-					else if (giamgia.Ngayketthuc > currentDate)
+					else if (giamgia.Ngaybatdau > currentDate)
 					{
 						giamgia.Trangthai = 1; // Chuẩn bị phát hành
 					}
@@ -130,7 +132,7 @@ namespace AppData.Service
 				// Cập nhật trạng thái cho tất cả các bản ghi
 				await _repository.UpdateRangeAsync(giamgias);
 				await Task.Delay(10000); // Đợi 10 giây trước khi kiểm tra lại
-			}
+			
 		}
 		
 		public async Task<bool> DeleteGiamgiaAsync(int giamgiaId)
@@ -181,7 +183,21 @@ namespace AppData.Service
 					throw new ArgumentException("Giá trị phải lớn hơn 0 khi Donvi là VND.");
 				}
 			}
-			
+
+			var currentDate = DateTime.Now;
+
+			if (dto.Ngaybatdau > currentDate)
+			{
+				dto.Trangthai = 1;  // Chuyển trạng thái "chuẩn bị phát hành"
+			}
+			else if (dto.Ngaybatdau <= currentDate && dto.Ngayketthuc >= currentDate)
+			{
+				dto.Trangthai = 0;  // Chuyển trạng thái "đang phát hành"
+			}
+			else if (dto.Ngayketthuc < currentDate)
+			{
+				dto.Trangthai = 3;  // Chuyển trạng thái "đã phát hành"
+			}
 			var giamgia = new Giamgia
 			{
 				Mota = dto.Mota,
@@ -211,25 +227,27 @@ namespace AppData.Service
 			{
 				throw new KeyNotFoundException("Không tìm thấy giảm giá với ID này.");
 			}
+
 			if (giamgia.Trangthai == 2)
 			{
 				dto.Trangthai = 2;
 			}
 			else
 			{
-				if (giamgia.Ngaybatdau <= currentDate && giamgia.Ngayketthuc >= currentDate)
+				if (dto.Ngaybatdau <= currentDate && dto.Ngayketthuc >= currentDate)
 				{
 					dto.Trangthai = 0;
 				}
-				else if (giamgia.Ngaybatdau < currentDate && giamgia.Ngayketthuc < currentDate)
+				else if (dto.Ngayketthuc < currentDate)
 				{
 					dto.Trangthai = 3; // Đã phát hành
 				}
-				else if (giamgia.Ngayketthuc > currentDate)
+				else if (dto.Ngaybatdau > currentDate)
 				{
 					dto.Trangthai = 1; // Chuẩn bị phát hành
 				}
 			}
+
 			// Cập nhật các thuộc tính của Giamgia
 			giamgia.Mota = dto.Mota;
 			giamgia.Donvi = dto.Donvi;
@@ -238,31 +256,21 @@ namespace AppData.Service
 			giamgia.Ngaybatdau = dto.Ngaybatdau;
 			giamgia.Ngayketthuc = dto.Ngayketthuc;
 			giamgia.Trangthai = dto.Trangthai;
-			await _repository.UpdateAsync(giamgia);
-			if (giamgia.Giamgia_Ranks == null)
-			{
-				giamgia.Giamgia_Ranks = new List<giamgia_rank>();
-			}
-			giamgia.Giamgia_Ranks.Clear();
-			foreach (var rankName in dto.RankNames)
-			{
-				var rank = (await _rankRepository.FindByNameAsync(rankName)).FirstOrDefault();
-				if (rank != null)
-				{
-					giamgia.Giamgia_Ranks.Add(new giamgia_rank
-					{
-						IDgiamgia = giamgia.Id,
-						Idrank = rank.Id
-					});
-				}
-				else
-				{
-					throw new KeyNotFoundException($"Không tìm thấy Rank với tên {rankName}.");
-				}
-			}
+			
 
-		
+
+
+			
+
+			// Gọi UpdateAsync sau khi đã thực hiện tất cả các thay đổi
+			await _repository.UpdateAsync(giamgia);
+			var itemsToRemove = _context.giamgia_Ranks.Where(x => x.IDgiamgia == giamgia.Id).ToList();
+			_context.giamgia_Ranks.RemoveRange(itemsToRemove);
+			await _context.SaveChangesAsync();
+
+			await _repository.AddRankToGiamgia(giamgia.Id, dto.RankNames);
+
 		}
 	}
-	}
+}
 

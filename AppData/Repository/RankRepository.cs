@@ -26,12 +26,12 @@ namespace AppData.Repository
 
 		public async Task<IEnumerable<Rank>> GetAllRanksAsync()
 		{
-			return await _context.ranks.ToListAsync();
+			return await _context.ranks.Where(x=>x.Trangthai ==0||x.Trangthai==1).ToListAsync();
 		}
 		public async Task<IEnumerable<Rank>> FindByNameAsync(string name)
 		{
 			return await _context.ranks
-				.Where(r => r.Tenrank.Contains(name))
+				.Where(r => r.Tenrank.Contains(name)&&( r.Trangthai == 0 || r.Trangthai == 1))
 				.ToListAsync();
 		}
 

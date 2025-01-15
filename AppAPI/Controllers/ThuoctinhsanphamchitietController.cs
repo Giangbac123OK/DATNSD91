@@ -14,12 +14,12 @@ namespace AppAPI.Controllers
 	public class ThuoctinhsanphamchitietController : Controller
 	{
 		private readonly IthuoctinhsanphamchitietService _service;
-		
+
 
 		public ThuoctinhsanphamchitietController(IthuoctinhsanphamchitietService service)
-        {
+		{
 			_service = service;
-			
+
 		}
 
 
@@ -53,15 +53,15 @@ namespace AppAPI.Controllers
 		[HttpGet("Admin")]
 		public async Task<IActionResult> GetAll()
 		{
-		
-				var result = await _service.GetAllAsync();
-				return Ok(result);
-			
+
+			var result = await _service.GetAllAsync();
+			return Ok(result);
 
 
-	
+
+
 		}
-		
+
 		[HttpGet("{idtt}/{idspct}/Admin")]
 		public async Task<IActionResult> GetById(int idtt, int idspct)
 		{
@@ -73,7 +73,7 @@ namespace AppAPI.Controllers
 			}
 			return Ok(data); // Trả về dữ liệu tìm thấy
 		}
-		
+
 		[HttpPost("Admin")]
 		public async Task<IActionResult> Create([FromBody] ThuoctinhsanphamchitietDto thuoctinhsanphamchitietDTO)
 		{
@@ -86,7 +86,7 @@ namespace AppAPI.Controllers
 			await _service.AddAsync(thuoctinhsanphamchitietDTO);
 			return CreatedAtAction(nameof(GetById), new { idtt = thuoctinhsanphamchitietDTO.Idtt, idspct = thuoctinhsanphamchitietDTO.Idspct }, thuoctinhsanphamchitietDTO);
 		}
-	
+
 		[HttpPut("{idtt}/{idspct}/Admin")]
 		public async Task<IActionResult> Update(int idtt, int idspct, [FromBody] ThuoctinhsanphamchitietDto thuoctinhsanphamchitietDTO)
 		{
@@ -108,15 +108,15 @@ namespace AppAPI.Controllers
 		}
 
 		[HttpGet("getbyidtt/{idtt}/Admin")]
-    public async Task<IActionResult> GetByIdtt(int idtt)
-    {
-      
-        var data = await _service.GetByIdttAsync(idtt);
-        
-       
-        return Ok(data);
+		public async Task<IActionResult> GetByIdtt(int idtt)
+		{
+
+			var data = await _service.GetByIdttAsync(idtt);
+
+
+			return Ok(data);
 		}
-		
+
 		[HttpDelete("{idtt}/{idspct}/Admin")]
 		public async Task<IActionResult> Delete(int idtt, int idspct)
 		{
@@ -131,7 +131,7 @@ namespace AppAPI.Controllers
 				return NotFound(new { message = ex.Message }); // Nếu có lỗi (ví dụ không tìm thấy sản phẩm), trả về lỗi 404
 			}
 		}
-		
+
 
 	}
 }

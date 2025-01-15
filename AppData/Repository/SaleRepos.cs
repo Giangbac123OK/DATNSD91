@@ -18,7 +18,12 @@ namespace AppData.Repository
 			_context=context;
 
 		}
-        public async Task AddAsync(Sale sale)
+		public async Task AddSaleAsync(Sale sale)
+		{
+			await _context.sales.AddAsync(sale);
+		}
+
+		public async Task AddAsync(Sale sale)
 		{
 			await _context.sales.AddAsync(sale);
 			await _context.SaveChangesAsync();
@@ -93,14 +98,6 @@ namespace AppData.Repository
 			await _context.SaveChangesAsync();
 		}
 
-		Task<List<UpdateGiaSanphamchitietDTO>> IsaleRepos.GetSanphamchitietForUpdateAsync(int saleId)
-		{
-			throw new NotImplementedException();
-		}
-
-		Task<List<SaleDetailDTO>> IsaleRepos.GetSaleDetailsBySaleIdAsync(int saleId)
-		{
-			throw new NotImplementedException();
-		}
+		
 	}
 }

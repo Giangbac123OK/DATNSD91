@@ -92,8 +92,24 @@ namespace AppData.Service
 			{
 				entity.Mota = dto.Mota;
 				entity.Soluong = dto.Soluong;
+				if (entity.Trangthai == 2)
+				{
+					entity.Trangthai = 2;
+				}
+				else
+				{
+					if (dto.Soluong > 0)
+					{
+						entity.Trangthai = 0;
+
+					}
+					else if (dto.Soluong == 0)
+					{
+						entity.Trangthai = 1;
+					}
+				}
 				entity.Idsp = dto.Idsp;
-				entity.Trangthai = dto.Soluong > 0 ? 0 : 1;
+				//entity.Trangthai = dto.Soluong > 0 ? 0 : 1;
 				entity.Giathoidiemhientai = sanpham.Giaban;
 				
 				await _repository.UpdateAsync(entity);
@@ -131,11 +147,22 @@ namespace AppData.Service
 				sanphamchitiet.Soluong = dto.Soluong;
 				sanphamchitiet.Mota = dto.Mota;
 
-				// Nếu Soluong = 0, cập nhật Trangthai = 1
-				if (dto.Soluong == 0)
+				if (sanphamchitiet.Trangthai == 2)
 				{
-					sanphamchitiet.Trangthai = 1;
+					sanphamchitiet.Trangthai =2;
 				}
+				else
+				{
+					if (dto.Soluong == 0)
+					{
+						sanphamchitiet.Trangthai = 1;
+					}
+					else
+					{
+						sanphamchitiet.Trangthai = 0;
+					}
+				}
+				
 
 				await _repository.UpdateAsync(sanphamchitiet);
 
@@ -185,6 +212,7 @@ namespace AppData.Service
 		public async Task<int> UpdateTrangThaiAsync(int id)
 		{
 			var sanphamchitiet = await _repository.GetByIdAsync(id);
+			var sanpham = await _spRepository.GetByIdAsync(sanphamchitiet.Idsp);
 			if (sanphamchitiet == null)
 			{
 				throw new Exception("Sản phẩm chi tiết không tồn tại");
@@ -198,15 +226,18 @@ namespace AppData.Service
 				}
 				else
 				{
+					sanpham.Soluong += sanphamchitiet.Soluong;
 					sanphamchitiet.Trangthai = 0; // Trạng thái = 0 nếu số lượng > 0
 				}
 			}
 			else
 			{
+				sanpham.Soluong -= sanphamchitiet.Soluong;
 				sanphamchitiet.Trangthai = 2; // Trạng thái = 2 nếu ban đầu không phải là 2
 			}
-
+			
 			await _repository.UpdateAsync(sanphamchitiet);
+			await _spRepository.UpdateAsync(sanpham);
 			return sanphamchitiet.Trangthai;
 		}
 

@@ -69,6 +69,7 @@ namespace AppAPI.Controllers
 			return Ok(resurl);
 		}
 
+
 		[HttpGet("Admin")]
 		public async Task<ActionResult<IEnumerable<Thuoctinh>>> GetAllAdmin()
 		{
