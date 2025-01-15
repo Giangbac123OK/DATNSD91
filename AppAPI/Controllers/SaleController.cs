@@ -143,6 +143,28 @@ namespace AppAPI.Controllers
 			await _KhachHang_service.DeleteAsync(id);
 			return NoContent();
 		}
+		[HttpGet("Admin")]
+		public async Task<IActionResult> GetAllAdmi()
+		{
+			var sales = await _service.GetAllWithIdAsync();
+			return Ok(sales.Select(s => new
+			{
+				s.Id, // Thêm Id vào kết quả trả về
+				s.Ten,
+				s.Mota,
+				Trangthai = s.Trangthai switch
+				{
+					0 => "Đang diễn ra",
+					1 => "Chuẩn bị diễn ra",
+					2 => "Đã diễn ra",
+					3 => "Dừng phát hành",
+					_ => "Không xác định"
+				},
+				s.Ngaybatdau,
+				s.Ngayketthuc
+			}));
+		}
+
 
 		[HttpGet("{id}/Admin")]
 		public async Task<IActionResult> GetByIdAdmin(int id)
