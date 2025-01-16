@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AppData.Migrations
 {
-    public partial class _ : Migration
+    public partial class _1st : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

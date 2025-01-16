@@ -48,7 +48,8 @@ namespace AppData
 		{
 			//G
 			/*optionsBuilder.UseSqlServer("Data Source=ADMIN-PC;Initial Catalog=SneakerT7M;Integrated Security=True;Encrypt=True;Trust Server Certificate=True;Timeout=19998");*/
-			optionsBuilder.UseSqlServer("Data Source=ADMIN-PC;Initial Catalog=SneakerT7M;Integrated Security=True;Trust Server Certificate=True");
+			/*optionsBuilder.UseSqlServer("Data Source=ADMIN-PC;Initial Catalog=SneakerT7M;Integrated Security=True;Trust Server Certificate=True");*/
+			optionsBuilder.UseSqlServer("Server=THAODTPPH43287\\SQLEXPRESS;Database=bangiay3;Trusted_Connection=True;TrustServerCertificate=True");
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)

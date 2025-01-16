@@ -20,8 +20,8 @@ namespace AppData.Models
 		[StringLength(500, ErrorMessage = "Mô tả không được quá 500 ký tự")]
 		public string? Mota { get; set; }
 
-		[Range(0, 3, ErrorMessage = "Trạng thái phải là 0, 1, 2 hoặc 3")]
-		public int Trangthai { get; set; }  // 0: Đang diễn ra, 1: Chuẩn bị diễn ra, 2: Đã diễn ra, 3: Hủy
+		[Range(0, 4, ErrorMessage = "Trạng thái phải là 0, 1, 2 hoặc 3")]
+		public int Trangthai { get; set; }  
 
 		[Required(ErrorMessage = "Ngày bắt đầu không được để trống")]
 		public DateTime Ngaybatdau { get; set; }

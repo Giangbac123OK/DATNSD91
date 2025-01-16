@@ -59,8 +59,8 @@ namespace AppData.Service
 					hoadon.Trangthai = (huy == 0) ? 2 : 4;
 					break;
 				case 2:
-					if (huy == 1)
-						hoadon.Trangthai = 4;
+					hoadon.Trangthai = (huy == 0) ? 3 : 4;
+				
 					break;
 				default:
 					throw new InvalidOperationException("Trạng thái không hợp lệ.");
@@ -300,6 +300,29 @@ namespace AppData.Service
 				Trangthai = hoadon.Trangthai
 			};
 		}
+		public async Task<HoadonUpdateNgaygiadukien> UpdateNgaygiaoHang(int id, DateTime ngaygiaodukien)
+		{
+			var hoadon = await _hoadonRepository.GetByIdAsync(id);
+
+			if (hoadon == null)
+			{
+				throw new Exception("Hóa đơn không tồn tại.");
+			}
+
+			// Gán trạng thái mới
+			hoadon.Ngaygiaodukien = ngaygiaodukien;
+
+			// Cập nhật hóa đơn
+			await _hoadonRepository.UpdateAsync(hoadon);
+
+			// Trả về DTO
+			return new HoadonUpdateNgaygiadukien
+			{
+				Id = hoadon.Id,
+				ngaygiadukien = hoadon.Ngaygiaodukien,
+			};
+		}
+
 		public async Task<bool> XoaHoadonAsync(int hoadonId)
 		{
 			try

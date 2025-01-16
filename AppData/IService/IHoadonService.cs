@@ -11,6 +11,7 @@ namespace AppData.IService
 {
 	public interface IHoadonService
 	{
+		Task<HoadonUpdateNgaygiadukien> UpdateNgaygiaoHang(int id, DateTime ngaygiaodukien);
 		Task<IEnumerable<Hoadon>> GetAllHoadonsAsync();
 		List<Hoadon> GetAllHoadons();
 		Task<Hoadon> AddHoaDon(CreateHoadonDTO dto);

@@ -93,8 +93,9 @@ namespace AppData.Service
 			if (x == false)
 			{
 				var exitProduct = await _repository.GetByIdAsync(id);
-				exitProduct.Trangthai = 3;//xóa mềm
-			 await	_repository.UpdateAsync(exitProduct);
+				exitProduct.Trangthai = 3;
+				var sp = await _repository.CheckForeignKeyConstraintAsync(id);
+				await	_repository.UpdateAsync(exitProduct);
 			}
 			else
 			{
@@ -139,8 +140,7 @@ namespace AppData.Service
 			{
 				throw new KeyNotFoundException("Sản phẩm không tồn tại");
 			}
-			if (sale.Trangthai != 3)
-			{
+			
 				if(sale.Trangthai == 2)
 				{
 					if (sale.Soluong > 0)
@@ -157,7 +157,6 @@ namespace AppData.Service
 					sale.Trangthai = 2;
 				}
 				
-			}
 
 
 			await _repository.UpdateAsync(sale);
