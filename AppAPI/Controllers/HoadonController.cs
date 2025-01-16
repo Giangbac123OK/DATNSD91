@@ -427,6 +427,19 @@ namespace AppAPI.Controllers
 				return NotFound(new { message = ex.Message });
 			}
 		}
+		[HttpPut("ngaygiaodukien/Admin")]
+		public async Task<IActionResult> UpdateNgaygiaodukien(int id, DateTime ngaygiaodukien)
+		{
+			try
+			{
+				var result = await _hoadonService.UpdateNgaygiaoHang(id, ngaygiaodukien);
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
+		}
 		[HttpGet("all/Admin")]
 		public async Task<ActionResult<IEnumerable<Hoadon>>> GetAllHoadonsThongke()
 		{

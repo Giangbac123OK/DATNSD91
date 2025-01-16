@@ -11,12 +11,23 @@ namespace AppAPI.Controllers
     [ApiController]
     public class TrahangController : ControllerBase
     {
-        private readonly KhachHang_ITraHangService _ser;
-        public TrahangController(KhachHang_ITraHangService ser)
-        {
-            _ser = ser;
-        }
-        [HttpGet]
+		private readonly KhachHang_ITraHangService _ser;
+		private readonly ITrahangService _service;
+		public TrahangController(KhachHang_ITraHangService ser, ITrahangService service)
+		{
+			_ser = ser;
+			_service = service;
+		}
+		[HttpGet("by-hoadon/{hoadonId}/Admin")]
+		public async Task<IActionResult> GetTrahangByHoadonId(int hoadonId)
+		{
+			var tra = await _service.GetTrahangByHoadonIdAsync(hoadonId);
+			if (tra == null)
+				return NotFound(new { message = "Không tìm thấy yêu cầu trả hàng cho hóa đơn này." });
+
+			return Ok(tra);
+		}
+		[HttpGet]
         public async Task<IActionResult> Get()
         {
             try

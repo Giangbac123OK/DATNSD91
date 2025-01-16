@@ -12,7 +12,7 @@ namespace AppData.IService
 	{
 		Task<bool> UpdateSaleWithDetailsAsync(int saleId, CreateSaleDto updateSaleDto);
 		Task<IEnumerable<Sale>> GetAllWithIdAsync();
-		Task<SaleDto> GetByIdAsync(int id);
+		Task<Sale> GetByIdAsync(int id);
 		Task<SaleDto> AddAsync(SaleDto saleDto);
 		Task UpdateStatusToCancelled(int id);
 		Task UpdateStatusBasedOnDates(int id);

@@ -25,7 +25,7 @@ namespace AppData.Models
         public decimal MaxMoney { get; set; }
 
         // Kiểm tra Trangthai phải là 0 hoặc 1
-        [Range(0, 1, ErrorMessage = "Trạng thái phải là 0 hoặc 1.")]
+        [Range(0, 2, ErrorMessage = "Trạng thái phải là 0 hoặc 2.")]//2 là xóa mềm
         public int Trangthai { get; set; }
         public virtual ICollection<Khachhang> Khachhangs { get; set; }
 		public virtual ICollection<giamgia_rank> Giamgia_Ranks { get; set; }

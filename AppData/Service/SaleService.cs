@@ -134,6 +134,41 @@ namespace AppData.Service
 
 			await _repository.AddSaleAsync(sale);
 			await _repository.SaveChangesAsync();
+
+			if (sale.Trangthai == 0)
+			{
+				foreach (var saleDetail in sale.Salechitiets)
+				{
+					// Lấy thông tin Sanphamchitiet bao gồm Sanpham
+					var sanphamchitiet = await _sanphamchitietRepository.GetByIdAsync(saleDetail.Idspct);
+					if (sanphamchitiet == null)
+					{
+						// Xử lý khi không tìm thấy Sanphamchitiet
+						continue;
+					}
+
+					// Lấy giá bán từ Sanpham
+					var giaban = sanphamchitiet.Sanpham?.Giaban ?? 0;
+
+					// Tính toán giaaataithoidiemban dựa trên Donvi
+					if (saleDetail.Donvi == 0)
+					{
+						// Donvi là VND
+						sanphamchitiet.Giathoidiemhientai = giaban - saleDetail.Giatrigiam;
+					}
+					else if (saleDetail.Donvi == 1)
+					{
+						// Donvi là %
+						sanphamchitiet.Giathoidiemhientai = giaban * (1 - (saleDetail.Giatrigiam / 100));
+					}
+
+					// Cập nhật Sanphamchitiet
+					await _sanphamchitietRepository.UpdateAsync(sanphamchitiet);
+				}
+
+				// Lưu các thay đổi
+			
+			}
 			return true;
 		}
 		public async Task<IEnumerable<Sale>> GetAllWithIdAsync()
@@ -141,13 +176,14 @@ namespace AppData.Service
 			return await _repository.GetAllAsync();
 		}
 
-		public async Task<SaleDto?> GetByIdAsync(int id)
+		public async Task<Sale?> GetByIdAsync(int id)
 		{
 			var sale = await _repository.GetByIdAsync(id);
 			if (sale == null) return null;
 
-			return new SaleDto
+			return new Sale
 			{
+				Id = sale.Id,
 				Ten = sale.Ten,
 				Mota = sale.Mota,
 				Trangthai = sale.Trangthai,
@@ -227,6 +263,8 @@ namespace AppData.Service
 
 			await _repository.UpdateAsync(sale);
 		}
+		
+
 		public async Task UpdateStatusToCancelled(int id)
 		{
 			var sale = await _repository.GetByIdAsync(id);

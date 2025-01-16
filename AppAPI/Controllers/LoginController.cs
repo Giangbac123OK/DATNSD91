@@ -140,13 +140,13 @@ namespace AppAPI.Controllers
             _context.khachhangs.Update(user);
             _context.SaveChanges();
 
-            var khachhang = _context.khachhangs.FirstOrDefault(x => x.Id == user.Id);
+            var khachhang = _context.giohangs.FirstOrDefault(x => x.Idkh == user.Id);
             if (khachhang == null)
             {
                 var giohang = new Giohang()
                 {
                     Soluong = 0,
-                    id = user.Id,
+                    Idkh = user.Id,
                 };
                 _context.giohangs.Add(giohang);
                 _context.SaveChanges();
