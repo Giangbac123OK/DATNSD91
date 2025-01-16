@@ -53,7 +53,7 @@ namespace AppData
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder.Entity<Lichsuthanhtoan>()
+            modelBuilder.Entity<Lichsuthanhtoan>()
 			.HasKey(l => new { l.Idhoadon,l.idPttt });
 			modelBuilder.Entity<Thuoctinhsanphamchitiet>()
 			.HasKey(l => new { l.Idtt,l.Idspct });
@@ -71,37 +71,26 @@ namespace AppData
 				.HasOne(g => g.Hoadonchitiet)           // Giỏ hàng có một Khách hàng
 				.WithOne(k => k.Trahangchitiet)            // Khách hàng có một Giỏ hàng
 				.HasForeignKey<Trahangchitiet>(g => g.Idhdct);
-			//modelBuilder.Entity<Salechitiet>()
-		   /*.HasOne(s => s.Sanpham)
-		   .WithMany(p => p.Salechitiets)
-		   .HasForeignKey(s => s.Idsp)
-		   .OnDelete(DeleteBehavior.Restrict);
-			modelBuilder.Entity<Danhgia>()*/
-	 /*  .HasOne(s => s.Khachhang)
-	   .WithMany(p => p.Danhgias)
-	   .HasForeignKey(s => s.Idkh)*/
-	   /*.OnDelete(DeleteBehavior.Restrict);*/
-		modelBuilder.Entity<Danhgia>()
-	   .HasOne(s => s.Khachhang)
-	   .WithMany(p => p.Danhgias)
-	   .HasForeignKey(s => s.Idkh)
-	   .OnDelete(DeleteBehavior.Restrict);
-		modelBuilder.Entity<Trahangchitiet>()
-	   .HasOne(s => s.Trahang)
-	   .WithMany(p => p.Trahangchitiets)
-	   .HasForeignKey(s => s.Idth)
-	   .OnDelete(DeleteBehavior.Restrict);
-		modelBuilder.Entity<Hoadonnhapchitiet>()
-	   .HasOne(s => s.Hoadonnhap)
-	   .WithMany(p => p.Hoadonnhapchitiets)
-	   .HasForeignKey(s => s.Idhdn)
-	   .OnDelete(DeleteBehavior.Restrict);
-		modelBuilder.Entity<Hoadonnhapchitiet>()
-	   .HasOne(s => s.Sanpham)
-	   .WithMany(p => p.Hoadonnhapchitiets)
-	   .HasForeignKey(s => s.Idsp)
-	   .OnDelete(DeleteBehavior.Restrict);
-
-		}
+			modelBuilder.Entity<Danhgia>()
+			   .HasOne(s => s.Khachhang)
+			   .WithMany(p => p.Danhgias)
+			   .HasForeignKey(s => s.Idkh)
+			   .OnDelete(DeleteBehavior.Restrict);
+			modelBuilder.Entity<Trahangchitiet>()
+			   .HasOne(s => s.Trahang)
+			   .WithMany(p => p.Trahangchitiets)
+			   .HasForeignKey(s => s.Idth)
+			   .OnDelete(DeleteBehavior.Restrict);
+				modelBuilder.Entity<Hoadonnhapchitiet>()
+			   .HasOne(s => s.Hoadonnhap)
+			   .WithMany(p => p.Hoadonnhapchitiets)
+			   .HasForeignKey(s => s.Idhdn)
+			   .OnDelete(DeleteBehavior.Restrict);
+			modelBuilder.Entity<Hoadonnhapchitiet>()
+			   .HasOne(s => s.Sanpham)
+			   .WithMany(p => p.Hoadonnhapchitiets)
+			   .HasForeignKey(s => s.Idsp)
+			   .OnDelete(DeleteBehavior.Restrict);
+        }
 	}
 }
